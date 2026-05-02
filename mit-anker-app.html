@@ -759,10 +759,20 @@
     <div class="splash-anker">⚓</div>
     <div class="splash-titel">Mit Anker</div>
     <div class="splash-sub">Din app. Dit liv.<br>Vi finder fodfæstet sammen.</div>
-    <button class="splash-knap" onclick="visSkærm('onboarding'); startOnboarding()">Kom i gang</button>
+    <button class="splash-knap" onclick="tjekApiNøgle()">Kom i gang</button>
     <div style="margin-top:16px;">
       <button class="knap-ghost" style="color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;" onclick="indlæsBorger()">Jeg har allerede appen →</button>
     </div>
+  </div>
+
+  <!-- API NØGLE OPSÆTNING -->
+  <div class="skærm" id="api-setup" style="background:linear-gradient(160deg,#1a3a4a,#2d6b7f);align-items:center;justify-content:center;padding:40px;gap:20px;display:flex;flex-direction:column;">
+    <div style="font-size:2rem;">🔑</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;color:white;text-align:center;">Opsætning</div>
+    <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.6;">Indtast din Claude API-nøgle for at aktivere AI-samtalen. Den gemmes kun på denne enhed.</div>
+    <input id="api-nøgle-input" type="password" placeholder="sk-ant-api03-..." style="width:100%;padding:14px 16px;border-radius:12px;border:none;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:#1a3a4a;outline:none;">
+    <button onclick="gemApiNøgle()" style="width:100%;background:white;color:#1a3a4a;border:none;border-radius:14px;padding:14px;font-size:0.9rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;">Gem og fortsæt</button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);text-align:center;">Nøglen forlader aldrig din enhed</div>
   </div>
 
   <!-- ONBOARDING -->
@@ -1441,7 +1451,7 @@ async function hentAiSvar() {
   try {
     const svar = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': window.CLAUDE_API_KEY_DYNAMIC || localStorage.getItem('mit_anker_api_key') || CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
         max_tokens: 1000,
@@ -1489,6 +1499,40 @@ function opdaterAiKnapper(svar) {
 // ============================================================
 // START
 // ============================================================
+function tjekApiNøgle() {
+  const gemt = localStorage.getItem('mit_anker_api_key');
+  if (gemt && gemt.startsWith('sk-ant-')) {
+    const gemtBorger = localStorage.getItem('mit_anker_borger');
+    if (gemtBorger) {
+      indlæsBorger();
+    } else {
+      visSkærm('onboarding');
+      startOnboarding();
+    }
+  } else {
+    visSkærm('api-setup');
+  }
+}
+
+function gemApiNøgle() {
+  const nøgle = document.getElementById('api-nøgle-input').value.trim();
+  if (!nøgle.startsWith('sk-ant-')) {
+    alert('Nøglen ser ikke rigtig ud. Den skal starte med sk-ant-');
+    return;
+  }
+  localStorage.setItem('mit_anker_api_key', nøgle);
+  // Opdater CLAUDE_API_KEY variablen
+  window.CLAUDE_API_KEY_DYNAMIC = nøgle;
+
+  const gemtBorger = localStorage.getItem('mit_anker_borger');
+  if (gemtBorger) {
+    indlæsBorger();
+  } else {
+    visSkærm('onboarding');
+    startOnboarding();
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   const gemtId = localStorage.getItem('mit_anker_borger_id');
   if (gemtId) {
