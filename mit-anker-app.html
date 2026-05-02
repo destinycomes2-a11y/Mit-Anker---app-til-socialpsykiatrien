@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mit Anker</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a3a4a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --hav: #1a3a4a;
+    --dybt: #0d2233;
+    --bølge: #2d6b7f;
+    --skum: #e8f4f8;
+    --sand: #f5ede0;
+    --sol: #e8a455;
+    --sol-lys: #fdf3e3;
+    --krise: #c0392b;
+    --krise-lys: #fdf0ee;
+    --grøn: #4a9b7f;
+    --grøn-lys: #e6f5f0;
+    --blød: #6b8fa0;
+    --border: rgba(26,58,74,0.1);
+    --bg: #f0f4f7;
+    --white: #ffffff;
+    --shadow: 0 4px 20px rgba(26,58,74,0.1);
+    --shadow-sm: 0 2px 8px rgba(26,58,74,0.07);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--hav);
+  }
+
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SKÆRME */
+  .skærm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .skærm.aktiv {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* SPLASH */
+  #splash {
+    background: linear-gradient(160deg, var(--hav) 0%, var(--bølge) 100%);
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+  }
+
+  .splash-anker {
+    font-size: 4rem;
+    animation: svaj 3s ease-in-out infinite;
+  }
+
+  @keyframes svaj {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .splash-titel {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+
+  .splash-sub {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .splash-knap {
+    margin-top: 20px;
+    background: white;
+    color: var(--hav);
+    border: none;
+    border-radius: 16px;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .splash-knap:active { transform: scale(0.97); }
+
+  /* ONBOARDING */
+  #onboarding {
+    background: var(--bg);
+    padding: 0;
+  }
+
+  .onboarding-indhold {
+    flex: 1;
+    padding: 60px 28px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    padding: 20px 28px 0;
+  }
+
+  .progress-trin {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .progress-trin.færdig { background: var(--hav); }
+  .progress-trin.aktiv { background: var(--bølge); }
+
+  .onboarding-titel {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--hav);
+    line-height: 1.3;
+  }
+
+  .onboarding-sub {
+    font-size: 0.85rem;
+    color: var(--blød);
+    line-height: 1.6;
+  }
+
+  /* KNAPPER */
+  .knap {
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.1s, opacity 0.1s;
+    width: 100%;
+    display: block;
+  }
+
+  .knap:active { transform: scale(0.98); opacity: 0.9; }
+
+  .knap-primær { background: var(--hav); color: white; }
+  .knap-sekundær { background: white; color: var(--hav); border: 1.5px solid var(--border); }
+  .knap-grøn { background: var(--grøn); color: white; }
+  .knap-ghost { background: transparent; color: var(--blød); font-size: 0.82rem; padding: 10px; }
+
+  /* INPUT */
+  .input-felt {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 1rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--hav);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-felt:focus { border-color: var(--bølge); }
+
+  /* VALG KNAPPER */
+  .valg-knap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .valg-knap:active { transform: scale(0.99); }
+
+  .valg-knap.valgt {
+    border-color: var(--grøn);
+    background: var(--grøn-lys);
+  }
+
+  .valg-ikon { font-size: 1.4rem; flex-shrink: 0; }
+  .valg-tekst { flex: 1; }
+  .valg-titel { font-size: 0.9rem; font-weight: 500; color: var(--hav); }
+  .valg-sub { font-size: 0.78rem; color: var(--blød); margin-top: 2px; }
+
+  /* KORT */
+  .kort {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 12px;
+  }
+
+  .kort-titel {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--blød);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  /* FORSIDE */
+  #forside {
+    background: var(--bg);
+  }
+
+  .forside-top {
+    background: linear-gradient(135deg, var(--hav), var(--bølge));
+    padding: 50px 20px 30px;
+    color: white;
+    border-radius: 0 0 28px 28px;
+    flex-shrink: 0;
+  }
+
+  .forside-hilsen {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    opacity: 0.75;
+  }
+
+  .forside-navn {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .forside-dato {
+    font-size: 0.72rem;
+    opacity: 0.5;
+    margin-top: 4px;
+  }
+
+  .forside-indhold {
+    padding: 20px 16px 100px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* HUMØR */
+  .humør-række {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .humør-knap {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: #f5f7f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0;
+  }
+
+  .humør-knap:active { transform: scale(0.95); }
+  .humør-knap.valgt { background: var(--grøn-lys); border-color: var(--grøn); }
+  .humør-emoji { font-size: 1.5rem; }
+  .humør-label { font-size: 0.6rem; color: var(--blød); }
+
+  /* OPGAVER */
+  .opgave-række {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f4f7;
+  }
+
+  .opgave-række:last-child { border-bottom: none; }
+
+  .check-boks {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .check-boks.færdig {
+    background: var(--grøn);
+    border-color: var(--grøn);
+    color: white;
+    font-size: 0.7rem;
+  }
+
+  .opgave-tekst {
+    font-size: 0.85rem;
+    color: var(--hav);
+    flex: 1;
+  }
+
+  .opgave-tekst.færdig { text-decoration: line-through; color: var(--blød); }
+  .opgave-tid { font-size: 0.72rem; color: var(--blød); flex-shrink: 0; }
+
+  /* AI VEN KNAP */
+  .ai-ven-knap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 12px;
+    transition: transform 0.1s;
+  }
+
+  .ai-ven-knap:active { transform: scale(0.99); }
+  .ai-ven-avatar { font-size: 1.4rem; }
+  .ai-ven-tekst { flex: 1; text-align: left; }
+  .ai-ven-navn { font-size: 0.85rem; font-weight: 500; color: var(--hav); }
+  .ai-ven-sub { font-size: 0.72rem; color: var(--blød); }
+
+  /* KRISE KNAP FAB */
+  .krise-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 50%;
+    transform: translateX(calc(50% + 196px));
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--krise);
+    color: white;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(192,57,43,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .krise-fab:active {
+    transform: translateX(calc(50% + 196px)) scale(0.93);
+    box-shadow: 0 3px 10px rgba(192,57,43,0.3);
+  }
+
+  /* KRISE SKÆRM */
+  #krise {
+    background: linear-gradient(160deg, #1a1a2e 0%, #2d1b2e 100%);
+  }
+
+  .krise-indhold {
+    padding: 60px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+
+  .krise-hoved {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .krise-ikon { font-size: 2.4rem; margin-bottom: 12px; display: block; }
+
+  .krise-titel {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: white;
+    line-height: 1.4;
+  }
+
+  .krise-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+  }
+
+  .krise-valg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .krise-valg {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: white;
+  }
+
+  .krise-valg:active { transform: scale(0.97); background: rgba(255,255,255,0.15); }
+  .krise-valg-ikon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+  .krise-valg-tekst { font-size: 0.78rem; font-family: 'DM Sans', sans-serif; }
+
+  .krise-valg.fuld { grid-column: 1 / -1; }
+
+  /* KRISE HJÆLP */
+  #krise-hjælp {
+    background: linear-gradient(160deg, #1a1a2e 0%, #2d1b2e 100%);
+  }
+
+  .krise-hjælp-indhold {
+    padding: 50px 24px 40px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .krise-anker-boks {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .krise-anker-label {
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .krise-anker-tekst {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.6;
+  }
+
+  .krise-kontakt-label {
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 16px 0 8px;
+  }
+
+  .krise-kontakt-række {
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .krise-kontakt-info { flex: 1; }
+  .krise-kontakt-navn { font-size: 0.85rem; color: white; font-weight: 500; }
+  .krise-kontakt-rolle { font-size: 0.72rem; color: rgba(255,255,255,0.45); }
+  .krise-kontakt-åben { font-size: 0.65rem; margin-top: 2px; }
+  .krise-kontakt-åben.åben { color: #5dbb9a; }
+  .krise-kontakt-åben.lukket { color: rgba(255,255,255,0.3); }
+
+  .ring-knap {
+    background: var(--grøn);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .system-kontakt-række {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .tilbage-knap {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  /* AI SAMTALE */
+  #ai-samtale {
+    background: var(--bg);
+  }
+
+  .ai-header {
+    background: var(--hav);
+    padding: 50px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .ai-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .ai-header-navn {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: white;
+  }
+
+  .ai-header-sub { font-size: 0.68rem; color: rgba(255,255,255,0.5); }
+
+  .ai-beskeder {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boble {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .boble.ai {
+    background: white;
+    color: var(--hav);
+    border-radius: 16px 16px 16px 4px;
+    align-self: flex-start;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .boble.bruger {
+    background: var(--hav);
+    color: white;
+    border-radius: 16px 16px 4px 16px;
+    align-self: flex-end;
+  }
+
+  .ai-knapper {
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .ai-svar-knap {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    color: var(--hav);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .ai-svar-knap:active { background: var(--skum); border-color: var(--bølge); }
+
+  .ai-skriv-række {
+    padding: 10px 16px 24px;
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+
+  .ai-input {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--hav);
+    outline: none;
+  }
+
+  .ai-send {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--hav);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* LOADER */
+  .loader {
+    display: flex;
+    gap: 4px;
+    padding: 10px 14px;
+    background: white;
+    border-radius: 16px 16px 16px 4px;
+    align-self: flex-start;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .loader-prik {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blød);
+    animation: puls 1.2s ease-in-out infinite;
+  }
+
+  .loader-prik:nth-child(2) { animation-delay: 0.2s; }
+  .loader-prik:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes puls {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: #f0f4f7; margin: 8px 0; }
+  .note { font-size: 0.72rem; color: var(--blød); text-align: center; margin-top: 6px; line-height: 1.5; }
+
+  /* ADVARSEL */
+  .advarsel {
+    background: var(--sol-lys);
+    border-left: 3px solid var(--sol);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 0.78rem;
+    color: #7a4a00;
+    line-height: 1.5;
+  }
+  .advarsel strong { font-weight: 500; display: block; margin-bottom: 2px; }
+
+  /* SPINNER */
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .fejl-boks {
+    background: var(--krise-lys);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 0.82rem;
+    color: var(--krise);
+    text-align: center;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SPLASH -->
+  <div class="skærm aktiv" id="splash">
+    <div class="splash-anker">⚓</div>
+    <div class="splash-titel">Mit Anker</div>
+    <div class="splash-sub">Din app. Dit liv.<br>Vi finder fodfæstet sammen.</div>
+    <button class="splash-knap" onclick="visSkærm('onboarding'); startOnboarding()">Kom i gang</button>
+    <div style="margin-top:16px;">
+      <button class="knap-ghost" style="color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;" onclick="indlæsBorger()">Jeg har allerede appen →</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="skærm" id="onboarding">
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="onboarding-indhold" id="onboarding-indhold"></div>
+  </div>
+
+  <!-- FORSIDE -->
+  <div class="skærm" id="forside">
+    <div class="forside-top">
+      <div class="forside-hilsen">God dag,</div>
+      <div class="forside-navn" id="forside-navn">...</div>
+      <div class="forside-dato" id="forside-dato"></div>
+    </div>
+    <div class="forside-indhold">
+
+      <button class="ai-ven-knap" onclick="visSkærm('ai-samtale'); startAiSamtale()" id="ai-ven-knap">
+        <div class="ai-ven-avatar">🌊</div>
+        <div class="ai-ven-tekst">
+          <div class="ai-ven-navn" id="ai-ven-display-navn">Din ven</div>
+          <div class="ai-ven-sub">Tryk for at tale</div>
+        </div>
+        <div style="color:var(--blød);font-size:1rem;">›</div>
+      </button>
+
+      <div class="kort">
+        <div class="kort-titel">Hvordan har du det?</div>
+        <div class="humør-række" id="humør-række">
+          <div class="humør-knap" onclick="registrerHumør(1)"><div class="humør-emoji">😔</div><div class="humør-label">Dårligt</div></div>
+          <div class="humør-knap" onclick="registrerHumør(2)"><div class="humør-emoji">😕</div><div class="humør-label">Svært</div></div>
+          <div class="humør-knap" onclick="registrerHumør(3)"><div class="humør-emoji">😐</div><div class="humør-label">Okay</div></div>
+          <div class="humør-knap" onclick="registrerHumør(4)"><div class="humør-emoji">🙂</div><div class="humør-label">Godt</div></div>
+          <div class="humør-knap" onclick="registrerHumør(5)"><div class="humør-emoji">😊</div><div class="humør-label">Rigtig godt</div></div>
+        </div>
+        <div class="note" id="humør-note">Ét enkelt tryk — ingen forklaring nødvendig</div>
+      </div>
+
+      <div class="kort">
+        <div class="kort-titel">I dag</div>
+        <div id="dagens-opgaver">
+          <div class="opgave-række">
+            <div class="check-boks" onclick="toggleOpgave(this)"></div>
+            <div class="opgave-tekst">Morgenmad</div>
+          </div>
+          <div class="opgave-række">
+            <div class="check-boks" onclick="toggleOpgave(this)"></div>
+            <div class="opgave-tekst">Medicin</div>
+            <div class="opgave-tid">kl. 12</div>
+          </div>
+          <div class="opgave-række">
+            <div class="check-boks" onclick="toggleOpgave(this)"></div>
+            <div class="opgave-tekst">Kom ud</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <button class="krise-fab" onclick="visSkærm('krise')" title="Kriseknap">🆘</button>
+  </div>
+
+  <!-- KRISE TRIN 1 -->
+  <div class="skærm" id="krise" style="position:absolute;inset:0;">
+    <button class="tilbage-knap" onclick="visSkærm('forside')">←</button>
+    <div class="krise-indhold">
+      <div class="krise-hoved">
+        <span class="krise-ikon">🫂</span>
+        <div class="krise-titel">Jeg er her.<br>Hvad sker der?</div>
+        <div class="krise-sub">Tryk på det der passer bedst</div>
+      </div>
+      <div class="krise-valg-grid">
+        <div class="krise-valg" onclick="visKriseHjælp('angst')">
+          <span class="krise-valg-ikon">😰</span>
+          <div class="krise-valg-tekst">Jeg er bange</div>
+        </div>
+        <div class="krise-valg" onclick="visKriseHjælp('tankemylder')">
+          <span class="krise-valg-ikon">🌀</span>
+          <div class="krise-valg-tekst">Tankemylder</div>
+        </div>
+        <div class="krise-valg" onclick="visKriseHjælp('stemmer')">
+          <span class="krise-valg-ikon">👁️</span>
+          <div class="krise-valg-tekst">Stemmer</div>
+        </div>
+        <div class="krise-valg" onclick="visKriseHjælp('trang')">
+          <span class="krise-valg-ikon">💊</span>
+          <div class="krise-valg-tekst">Trang</div>
+        </div>
+        <div class="krise-valg" onclick="visKriseHjælp('ensom')">
+          <span class="krise-valg-ikon">😔</span>
+          <div class="krise-valg-tekst">Ensom</div>
+        </div>
+        <div class="krise-valg" onclick="visKriseHjælp('abstinenser')">
+          <span class="krise-valg-ikon">🥵</span>
+          <div class="krise-valg-tekst">Abstinenser</div>
+        </div>
+        <div class="krise-valg fuld" onclick="visKriseHjælp('ved_ikke')">
+          <span class="krise-valg-ikon">🤷</span>
+          <div class="krise-valg-tekst">Jeg ved bare ikke</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KRISE HJÆLP -->
+  <div class="skærm" id="krise-hjælp" style="position:absolute;inset:0;">
+    <button class="tilbage-knap" onclick="visSkærm('krise')">←</button>
+    <div class="krise-hjælp-indhold" id="krise-hjælp-indhold"></div>
+  </div>
+
+  <!-- AI SAMTALE -->
+  <div class="skærm" id="ai-samtale" style="position:absolute;inset:0;">
+    <div class="ai-header">
+      <button style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:34px;height:34px;color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="visSkærm('forside')">←</button>
+      <div class="ai-avatar">⚓</div>
+      <div>
+        <div class="ai-header-navn" id="ai-header-navn">Din ven</div>
+        <div class="ai-header-sub">Altid her for dig</div>
+      </div>
+    </div>
+    <div class="ai-beskeder" id="ai-beskeder"></div>
+    <div class="ai-knapper" id="ai-knapper">
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg er ked af det')">Jeg er ked af det</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg er angst')">Jeg er angst</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg er ensom')">Jeg er ensom</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg ved ikke rigtig')">Jeg ved ikke rigtig</div>
+    </div>
+    <div class="ai-skriv-række">
+      <input class="ai-input" id="ai-input" placeholder="Skriv noget..." onkeydown="if(event.key==='Enter')sendAiInput()">
+      <button class="ai-send" onclick="sendAiInput()">➤</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// KONFIGURATION
+// ============================================================
+const SUPABASE_URL = 'https://doxlyythyrgmnjikwkhf.supabase.co';
+const SUPABASE_KEY = 'sb_publishable__kc7QWPajUqvgmmsvcjwgQ_lGBgV7s7';
+const CLAUDE_API_KEY = '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';
+const CLAUDE_MODEL = 'claude-sonnet-4-5';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// APP STATE
+// ============================================================
+let borger = null;
+let aiHistorik = [];
+let aktivKrisetype = '';
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function visSkærm(id) {
+  document.querySelectorAll('.skærm').forEach(s => s.classList.remove('aktiv'));
+  document.getElementById(id).classList.add('aktiv');
+}
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+const onboardingTrin = [
+  'støtteperson', 'støtteperson_detaljer', 'navn', 'ai_navn', 'datadeling'
+];
+
+let aktivtTrin = 0;
+let onboardingData = {
+  harStoetteperson: null,
+  laverSammen: false,
+  stoettepersonNavn: '',
+  stoettepersonRolle: '',
+  navn: '',
+  anonym: false,
+  aiVenNavn: '',
+  aiDatadeling: false
+};
+
+function startOnboarding() {
+  aktivtTrin = 0;
+  visTrin(0);
+}
+
+function visTrin(trin) {
+  opdaterProgress();
+  const indhold = document.getElementById('onboarding-indhold');
+
+  const trin0 = `
+    <div class="onboarding-titel">Har du en støtteperson?</div>
+    <div class="onboarding-sub">De kan hjælpe dig med at komme godt i gang. Du kan altid tilføje dem senere.</div>
+    <div class="valg-knap ${onboardingData.harStoetteperson === 'ja_sammen' ? 'valgt' : ''}" onclick="vælgStoette('ja_sammen')">
+      <div class="valg-ikon">🤝</div>
+      <div class="valg-tekst">
+        <div class="valg-titel">Ja — vi laver det sammen</div>
+        <div class="valg-sub">God idé, så er I med fra start</div>
+      </div>
+    </div>
+    <div class="valg-knap ${onboardingData.harStoetteperson === 'ja_selv' ? 'valgt' : ''}" onclick="vælgStoette('ja_selv')">
+      <div class="valg-ikon">🔄</div>
+      <div class="valg-tekst">
+        <div class="valg-titel">Ja — men jeg starter selv nu</div>
+        <div class="valg-sub">Du kan give dem adgang senere</div>
+      </div>
+    </div>
+    <div class="valg-knap ${onboardingData.harStoetteperson === 'nej' ? 'valgt' : ''}" onclick="vælgStoette('nej')">
+      <div class="valg-ikon">➡️</div>
+      <div class="valg-tekst">
+        <div class="valg-titel">Nej / Ikke nu</div>
+        <div class="valg-sub">Du kan altid tilføje dem senere</div>
+      </div>
+    </div>
+  `;
+
+  const trin1 = `
+    <div class="onboarding-titel">Hvad hedder din støtteperson?</div>
+    <div class="onboarding-sub">Vi tilføjer dem med det samme så I kan lave appen sammen.</div>
+    <input class="input-felt" id="stoette-navn" placeholder="Navn..." value="${onboardingData.stoettepersonNavn}" oninput="onboardingData.stoettepersonNavn=this.value">
+    <input class="input-felt" id="stoette-rolle" placeholder="Rolle — fx støtteperson, §85..." value="${onboardingData.stoettepersonRolle}" oninput="onboardingData.stoettepersonRolle=this.value">
+    <button class="knap knap-primær" onclick="næsteTrin()">Videre</button>
+    <button class="knap knap-ghost" onclick="onboardingData.stoettepersonNavn='';aktivtTrin=2;visTrin(2)">Spring over</button>
+  `;
+
+  const trin2 = `
+    <div class="onboarding-titel">Hvad hedder du?</div>
+    <div class="onboarding-sub">Kun du — og dem du vælger — kan se det.</div>
+    <input class="input-felt" id="borger-navn" placeholder="Dit navn..." value="${onboardingData.navn}" oninput="onboardingData.navn=this.value">
+    <button class="knap knap-primær" onclick="næsteTrin()">Videre</button>
+    <button class="knap knap-ghost" onclick="onboardingData.anonym=true;onboardingData.navn='Anonym';næsteTrin()">Forbliv anonym</button>
+  `;
+
+  const trin3 = `
+    <div class="onboarding-titel">Din ven har brug for et navn</div>
+    <div class="onboarding-sub">Du bestemmer hvad din ven hedder. Du kan altid skifte det.</div>
+    <input class="input-felt" id="ai-navn" placeholder="Fx Ro, Lys, Havnen..." value="${onboardingData.aiVenNavn}" oninput="onboardingData.aiVenNavn=this.value">
+    <div class="note">Din ven er her for dig døgnet rundt</div>
+    <button class="knap knap-primær" onclick="næsteTrin()">Det er det navn</button>
+  `;
+
+  const trin4 = `
+    <div class="onboarding-titel">Må din ven kende dig bedre?</div>
+    <div class="onboarding-sub">Din ven kan hjælpe dig mere hvis den kender dine mål og din hverdag.</div>
+    <div class="valg-knap ${onboardingData.aiDatadeling ? 'valgt' : ''}" onclick="onboardingData.aiDatadeling=true;this.parentElement.querySelectorAll('.valg-knap').forEach(k=>k.classList.remove('valgt'));this.classList.add('valgt')">
+      <div class="valg-ikon">💛</div>
+      <div class="valg-tekst">
+        <div class="valg-titel">Ja, det vil jeg</div>
+        <div class="valg-sub">Din ven lærer dig at kende</div>
+      </div>
+    </div>
+    <div class="valg-knap ${!onboardingData.aiDatadeling ? 'valgt' : ''}" onclick="onboardingData.aiDatadeling=false;this.parentElement.querySelectorAll('.valg-knap').forEach(k=>k.classList.remove('valgt'));this.classList.add('valgt')">
+      <div class="valg-ikon">🔒</div>
+      <div class="valg-tekst">
+        <div class="valg-titel">Nej tak — ikke nu</div>
+        <div class="valg-sub">Du kan altid skifte mening</div>
+      </div>
+    </div>
+    <div class="note">Du kan ændre dette når som helst i indstillinger</div>
+    <button class="knap knap-grøn" onclick="afslutOnboarding()">Kom i gang ⚓</button>
+  `;
+
+  const trin_indhold = [trin0, trin1, trin2, trin3, trin4];
+  indhold.innerHTML = trin_indhold[trin] || '';
+}
+
+function opdaterProgress() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = onboardingTrin.map((_, i) => {
+    let klasse = '';
+    if (i < aktivtTrin) klasse = 'færdig';
+    else if (i === aktivtTrin) klasse = 'aktiv';
+    return `<div class="progress-trin ${klasse}"></div>`;
+  }).join('');
+}
+
+function vælgStoette(valg) {
+  onboardingData.harStoetteperson = valg;
+  onboardingData.laverSammen = valg === 'ja_sammen';
+  visTrin(0);
+  setTimeout(() => {
+    if (valg === 'nej') {
+      aktivtTrin = 2;
+      visTrin(2);
+    } else {
+      aktivtTrin = 1;
+      visTrin(1);
+    }
+  }, 200);
+}
+
+function næsteTrin() {
+  aktivtTrin++;
+  if (aktivtTrin >= onboardingTrin.length) {
+    afslutOnboarding();
+  } else {
+    visTrin(aktivtTrin);
+  }
+}
+
+async function afslutOnboarding() {
+  const navn = onboardingData.navn || 'Anonym';
+  const aiNavn = onboardingData.aiVenNavn || 'Din ven';
+
+  try {
+    const { data, error } = await db
+      .from('borgere')
+      .insert({
+        navn: navn,
+        anonym: onboardingData.anonym,
+        ai_ven_navn: aiNavn,
+        ai_datadeling: onboardingData.aiDatadeling,
+        udfordringer: []
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    borger = data;
+    localStorage.setItem('mit_anker_borger_id', borger.id);
+
+    if (onboardingData.stoettepersonNavn) {
+      await db.from('stoettepersoner').insert({
+        borger_id: borger.id,
+        navn: onboardingData.stoettepersonNavn,
+        rolle: onboardingData.stoettepersonRolle || 'Støtteperson',
+        krise_kontakt: true,
+        krise_prioritet: 1
+      });
+    }
+
+    visForside();
+  } catch (err) {
+    console.error(err);
+    borger = {
+      id: 'lokal',
+      navn: navn,
+      ai_ven_navn: aiNavn,
+      ai_datadeling: onboardingData.aiDatadeling
+    };
+    visForside();
+  }
+}
+
+// ============================================================
+// FORSIDE
+// ============================================================
+function visForside() {
+  if (!borger) return;
+
+  const nu = new Date();
+  const time = nu.getHours();
+  let hilsen = time < 10 ? 'God morgen,' : time < 14 ? 'God dag,' : time < 18 ? 'God eftermiddag,' : 'God aften,';
+
+  const elHilsen = document.getElementById('forside-hilsen');
+  const elNavn = document.getElementById('forside-navn');
+  const elDato = document.getElementById('forside-dato');
+  const elAiNavn = document.getElementById('ai-ven-display-navn');
+  const elAiHeader = document.getElementById('ai-header-navn');
+
+  if (elHilsen) elHilsen.textContent = hilsen;
+  if (elNavn) elNavn.textContent = borger.navn || 'Anonym';
+  if (elDato) elDato.textContent = nu.toLocaleDateString('da-DK', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+
+  const aiNavn = borger.ai_ven_navn || 'Din ven';
+  if (elAiNavn) elAiNavn.textContent = aiNavn;
+  if (elAiHeader) elAiHeader.textContent = aiNavn;
+
+  visSkærm('forside');
+}
+
+async function indlæsBorger() {
+  const gemt_id = localStorage.getItem('mit_anker_borger_id');
+  if (!gemt_id) {
+    visSkærm('onboarding');
+    startOnboarding();
+    return;
+  }
+
+  try {
+    const { data, error } = await db
+      .from('borgere')
+      .select('*')
+      .eq('id', gemt_id)
+      .single();
+
+    if (error || !data) throw error;
+    borger = data;
+    visForside();
+  } catch {
+    visSkærm('onboarding');
+    startOnboarding();
+  }
+}
+
+// ============================================================
+// HUMØR REGISTRERING
+// ============================================================
+async function registrerHumør(niveau) {
+  const knapper = document.querySelectorAll('.humør-knap');
+  knapper.forEach((k, i) => {
+    k.classList.toggle('valgt', i === niveau - 1);
+  });
+
+  const etiketter = ['Dårlig dag', 'Svær dag', 'Okay dag', 'God dag', 'Rigtig god dag'];
+  document.getElementById('humør-note').textContent = etiketter[niveau - 1] + ' — registreret ✓';
+
+  if (borger && borger.id !== 'lokal') {
+    const idag = new Date().toISOString().split('T')[0];
+    await db.from('check_ins').upsert({
+      borger_id: borger.id,
+      dato: idag,
+      humør: niveau
+    }, { onConflict: 'borger_id,dato' });
+  }
+}
+
+// ============================================================
+// OPGAVER
+// ============================================================
+function toggleOpgave(el) {
+  el.classList.toggle('færdig');
+  const tekst = el.nextElementSibling;
+  if (el.classList.contains('færdig')) {
+    el.innerHTML = '✓';
+    tekst.classList.add('færdig');
+  } else {
+    el.innerHTML = '';
+    tekst.classList.remove('færdig');
+  }
+}
+
+// ============================================================
+// KRISE
+// ============================================================
+const kriseIndhold = {
+  angst: {
+    ikon: '😰',
+    titel: 'Angst og frygt',
+    ankre: 'Træk vejret langsomt. Mærk dine fødder mod gulvet. Du er i sikkerhed lige nu.',
+    øvelse: '🫁 Vejrtrækningsøvelse: Ind 4 sekunder — hold 4 — ud 6 sekunder'
+  },
+  tankemylder: {
+    ikon: '🌀',
+    titel: 'Tankemylder',
+    ankre: 'Gå ud i frisk luft. Sæt musik i ørerne. Vent — tankerne går over.',
+    øvelse: '🌿 Jordfæstning: Nævn 5 ting du kan se, 4 du kan røre, 3 du kan høre'
+  },
+  stemmer: {
+    ikon: '👁️',
+    titel: 'Stemmer',
+    ankre: 'Sæt høretelefoner i. Gå et roligt sted hen. Sig til dig selv: det er stemmer, ikke virkelighed.',
+    øvelse: '🎵 Sæt musik på og fokuser på melodien'
+  },
+  trang: {
+    ikon: '💊',
+    titel: 'Trang',
+    ankre: 'Vent 15 minutter. Trangen topper og går ned igen. Du har klaret det før.',
+    øvelse: '⏱️ Sæt en timer på 15 minutter — ring til nogen imens'
+  },
+  ensom: {
+    ikon: '😔',
+    titel: 'Ensomhed',
+    ankre: 'Det er okay at række ud. Send en besked. Gå ud hvor der er mennesker.',
+    øvelse: '💬 Skriv til én person — bare "hej, jeg tænker på dig"'
+  },
+  abstinenser: {
+    ikon: '🥵',
+    titel: 'Abstinenser',
+    ankre: 'Drik vand. Lig ned. Ring til misbrugscentret — de er der for dig.',
+    øvelse: '💧 Drik et stort glas vand. Læg en kold klud på panden.'
+  },
+  ved_ikke: {
+    ikon: '🤷',
+    titel: 'Jeg ved bare ikke',
+    ankre: 'Det er okay ikke at vide hvad der er galt. Du behøver ikke forklare noget.',
+    øvelse: '🫂 Bare sid et øjeblik. Du behøver ikke gøre noget lige nu.'
+  }
+};
+
+function visKriseHjælp(type) {
+  aktivKrisetype = type;
+  const data = kriseIndhold[type] || kriseIndhold.ved_ikke;
+  const nu = new Date();
+  const time = nu.getHours();
+
+  const akutÅben = time >= 21 || time < 8;
+
+  const html = `
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:2rem;margin-bottom:8px;">${data.ikon}</div>
+      <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:300;color:white;">${data.titel}</div>
+    </div>
+
+    <div class="krise-anker-boks">
+      <div class="krise-anker-label">Dit personlige anker</div>
+      <div class="krise-anker-tekst">${data.ankre}</div>
+    </div>
+
+    <div class="krise-anker-boks" style="background:rgba(74,155,127,0.15);border-color:rgba(74,155,127,0.3);">
+      <div class="krise-anker-label" style="color:rgba(93,187,154,0.7);">Prøv dette</div>
+      <div class="krise-anker-tekst">${data.øvelse}</div>
+    </div>
+
+    <div class="krise-kontakt-label">Ring til</div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">Hertughaven Akut</div>
+        <div class="krise-kontakt-åben ${akutÅben ? 'åben' : 'lukket'}">
+          ${akutÅben ? '● Åben nu' : '● Åbner kl. 21:00'} · 21:00—07:30
+        </div>
+      </div>
+      ${akutÅben ? '<a class="ring-knap" href="tel:+4574000000">📞 Ring</a>' : '<div style="font-size:0.72rem;color:rgba(255,255,255,0.3);">Ikke åben nu</div>'}
+    </div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">Livslinien</div>
+        <div class="krise-kontakt-åben åben">● Åben døgnet rundt</div>
+      </div>
+      <a class="ring-knap" href="tel:70201201">📞 Ring</a>
+    </div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">Giftlinjen</div>
+        <div class="krise-kontakt-åben åben">● Åben døgnet rundt</div>
+      </div>
+      <a class="ring-knap" href="tel:82121212">📞 Ring</a>
+    </div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">StopSpillet</div>
+        <div class="krise-kontakt-åben ${(time >= 9 && time < 21) ? 'åben' : 'lukket'}">
+          ${(time >= 9 && time < 21) ? '● Åben nu' : '● Åbner kl. 09:00'} · man–tor 9–21
+        </div>
+      </div>
+      <a class="ring-knap" href="tel:70222825">📞 Ring</a>
+    </div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">Lægevagten · 1813</div>
+        <div class="krise-kontakt-åben åben">● Åben døgnet rundt</div>
+      </div>
+      <a class="ring-knap" href="tel:1813">📞 Ring</a>
+    </div>
+
+    <div class="krise-kontakt-række">
+      <div class="krise-kontakt-info">
+        <div class="krise-kontakt-navn">112</div>
+        <div class="krise-kontakt-åben åben">● Altid</div>
+      </div>
+      <a class="ring-knap" href="tel:112">📞 Ring</a>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:12px;">Hvordan har du det nu?</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="visSkærm('forside')" style="flex:1;padding:12px;border-radius:12px;background:rgba(74,155,127,0.2);border:1px solid rgba(74,155,127,0.4);color:white;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">😌 Lidt bedre</button>
+        <button onclick="visSkærm('ai-samtale');startAiKrise()" style="flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">💬 Tal med ${borger?.ai_ven_navn || 'din ven'}</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('krise-hjælp-indhold').innerHTML = html;
+  visSkærm('krise-hjælp');
+}
+
+// ============================================================
+// AI SAMTALE
+// ============================================================
+function startAiSamtale() {
+  aiHistorik = [];
+  const aiNavn = borger?.ai_ven_navn || 'Din ven';
+  document.getElementById('ai-header-navn').textContent = aiNavn;
+  const container = document.getElementById('ai-beskeder');
+  container.innerHTML = '';
+
+  const system = bygSystemPrompt(false);
+  const startBesked = borger?.navn && borger.navn !== 'Anonym'
+    ? `Hej ${borger.navn}. Hvordan har du det i dag?`
+    : `Hej. Jeg er her for dig. Hvordan har du det?`;
+
+  tilføjBoble(startBesked, 'ai');
+  aiHistorik.push({ role: 'assistant', content: startBesked });
+}
+
+function startAiKrise() {
+  aiHistorik = [];
+  const container = document.getElementById('ai-beskeder');
+  container.innerHTML = '';
+  const aiNavn = borger?.ai_ven_navn || 'Din ven';
+  document.getElementById('ai-header-navn').textContent = aiNavn;
+
+  const startBesked = `Jeg er her. Du behøver ikke forklare alt. Hvad sker der lige nu?`;
+  tilføjBoble(startBesked, 'ai');
+  aiHistorik.push({ role: 'assistant', content: startBesked });
+
+  document.getElementById('ai-knapper').innerHTML = `
+    <div class="ai-svar-knap" onclick="sendAiSvar('Jeg er bange')">Jeg er bange</div>
+    <div class="ai-svar-knap" onclick="sendAiSvar('Jeg har det lidt bedre nu')">Lidt bedre nu</div>
+    <div class="ai-svar-knap" onclick="sendAiSvar('Jeg har stadig brug for hjælp')">Jeg har stadig brug for hjælp</div>
+  `;
+}
+
+function tilføjBoble(tekst, afsender) {
+  const container = document.getElementById('ai-beskeder');
+  const boble = document.createElement('div');
+  boble.className = `boble ${afsender}`;
+  boble.textContent = tekst;
+  container.appendChild(boble);
+  container.scrollTop = container.scrollHeight;
+}
+
+function visLoader() {
+  const container = document.getElementById('ai-beskeder');
+  const loader = document.createElement('div');
+  loader.className = 'loader';
+  loader.id = 'ai-loader';
+  loader.innerHTML = '<div class="loader-prik"></div><div class="loader-prik"></div><div class="loader-prik"></div>';
+  container.appendChild(loader);
+  container.scrollTop = container.scrollHeight;
+}
+
+function fjernLoader() {
+  const loader = document.getElementById('ai-loader');
+  if (loader) loader.remove();
+}
+
+function bygSystemPrompt(erKrise) {
+  const navn = borger?.navn && borger.navn !== 'Anonym' ? borger.navn : 'borgeren';
+  const aiNavn = borger?.ai_ven_navn || 'Din ven';
+
+  return `Du er ${aiNavn}, en varm og støttende AI-ven i appen Mit Anker. Du taler med ${navn}.
+
+Du er IKKE en terapeut eller læge. Du er en tryg samtalepartner.
+
+Dine regler:
+- Tal dansk, simpelt og varmt. Aldrig klinisk sprog.
+- Svar KORT — max 2-3 sætninger ad gangen.
+- Stil ét spørgsmål ad gangen — aldrig flere.
+- Vær nysgerrig og nærværende — aldrig bedrevidende.
+- Anerkend følelser før du foreslår noget.
+- Hvis nogen nævner selvskade eller suicidale tanker: vær rolig, anerkend, og opfordr blidt til at ringe til Livslinien på 70 201 201.
+${erKrise ? '- Personen er i krise. Vær ekstra rolig og kort. Brug enkle ord.' : ''}
+
+Du må aldrig:
+- Give medicinske råd
+- Diagnosticere
+- Love at alt bliver godt
+- Skrive lange svar`;
+}
+
+async function sendAiSvar(tekst) {
+  tilføjBoble(tekst, 'bruger');
+  aiHistorik.push({ role: 'user', content: tekst });
+  await hentAiSvar();
+}
+
+async function sendAiInput() {
+  const input = document.getElementById('ai-input');
+  const tekst = input.value.trim();
+  if (!tekst) return;
+  input.value = '';
+  await sendAiSvar(tekst);
+}
+
+async function hentAiSvar() {
+  visLoader();
+
+  try {
+    const svar = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 1000,
+        system: bygSystemPrompt(false),
+        messages: aiHistorik
+      })
+    });
+
+    const data = await svar.json();
+    fjernLoader();
+
+    if (data.content && data.content[0]) {
+      const tekst = data.content[0].text;
+      tilføjBoble(tekst, 'ai');
+      aiHistorik.push({ role: 'assistant', content: tekst });
+
+      opdaterAiKnapper(tekst);
+    }
+  } catch (err) {
+    fjernLoader();
+    tilføjBoble('Beklager — jeg kunne ikke forbinde lige nu. Prøv igen om lidt.', 'ai');
+  }
+}
+
+function opdaterAiKnapper(svar) {
+  const knapper = document.getElementById('ai-knapper');
+  const lavt = svar.toLowerCase();
+
+  if (lavt.includes('?')) {
+    knapper.innerHTML = `
+      <div class="ai-svar-knap" onclick="sendAiSvar('Ja')">Ja</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Nej')">Nej</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Lidt af begge dele')">Lidt af begge dele</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg ved ikke')">Jeg ved ikke</div>
+    `;
+  } else {
+    knapper.innerHTML = `
+      <div class="ai-svar-knap" onclick="sendAiSvar('Tak')">Tak</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Fortæl mig mere')">Fortæl mig mere</div>
+      <div class="ai-svar-knap" onclick="sendAiSvar('Jeg har det stadig svært')">Jeg har det stadig svært</div>
+    `;
+  }
+}
+
+// ============================================================
+// START
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const gemtId = localStorage.getItem('mit_anker_borger_id');
+  if (gemtId) {
+    indlæsBorger();
+  }
+});
+</script>
+</body>
+</html>
