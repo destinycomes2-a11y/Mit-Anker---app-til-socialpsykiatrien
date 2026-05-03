@@ -1688,7 +1688,7 @@ let pinKaldbagefter = null;
 function gemPin() {
   const pin = document.getElementById('pin-input').value;
   const bekræft = document.getElementById('pin-bekræft').value;
-  if (pin.length !== 4 || isNaN(pin)) {
+  if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
     alert('PIN skal være præcis 4 cifre');
     return;
   }
@@ -2112,7 +2112,7 @@ function opdaterForsideOpgaver() {
 function skiftPin() {
   const nyPin = document.getElementById('ny-pin').value;
   const bekræft = document.getElementById('ny-pin-bekræft').value;
-  if (nyPin.length !== 4 || isNaN(nyPin)) { alert('PIN skal være 4 cifre'); return; }
+  if (!/^\d{4}$/.test(nyPin)) { alert('PIN skal være 4 cifre'); return; }
   if (nyPin !== bekræft) { alert('PIN koderne er ikke ens'); return; }
   localStorage.setItem('mit_anker_pin', nyPin);
   document.getElementById('ny-pin').value = '';
