@@ -765,6 +765,65 @@
     </div>
   </div>
 
+  <!-- PIN OPSÆTNING -->
+  <div class="skærm" id="pin-setup" style="background:linear-gradient(160deg,#1a3a4a,#2d6b7f);align-items:center;justify-content:center;padding:40px;gap:16px;display:flex;flex-direction:column;">
+    <div style="font-size:2rem;">🔒</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;color:white;text-align:center;">Opret støtteperson PIN</div>
+    <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.6;">Denne PIN bruges til at ændre vigtige indstillinger. Kun støttepersonen skal kende den.</div>
+    <input id="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="4 cifre..." style="width:100%;padding:14px 16px;border-radius:12px;border:none;font-size:1.4rem;text-align:center;font-family:'DM Sans',sans-serif;color:#1a3a4a;letter-spacing:0.3em;outline:none;">
+    <input id="pin-bekræft" type="password" inputmode="numeric" maxlength="4" placeholder="Bekræft PIN..." style="width:100%;padding:14px 16px;border-radius:12px;border:none;font-size:1.4rem;text-align:center;font-family:'DM Sans',sans-serif;color:#1a3a4a;letter-spacing:0.3em;outline:none;">
+    <button onclick="gemPin()" style="width:100%;background:white;color:#1a3a4a;border:none;border-radius:14px;padding:14px;font-size:0.9rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;">Gem PIN og fortsæt</button>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);text-align:center;">PIN gemmes kun på denne enhed</div>
+  </div>
+
+  <!-- PIN GODKENDELSE -->
+  <div class="skærm" id="pin-godkend" style="background:linear-gradient(160deg,#1a3a4a,#2d6b7f);align-items:center;justify-content:center;padding:40px;gap:16px;display:flex;flex-direction:column;">
+    <div style="font-size:2rem;">🔒</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;color:white;text-align:center;">Støtteperson PIN</div>
+    <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.6;">Indtast PIN for at ændre indstillinger</div>
+    <input id="pin-godkend-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" style="width:100%;padding:14px 16px;border-radius:12px;border:none;font-size:1.8rem;text-align:center;font-family:'DM Sans',sans-serif;color:#1a3a4a;letter-spacing:0.4em;outline:none;" onkeydown="if(event.key==='Enter')bekræftPin()">
+    <div id="pin-fejl" style="font-size:0.82rem;color:#ff8a7a;text-align:center;display:none;">Forkert PIN — prøv igen</div>
+    <button onclick="bekræftPin()" style="width:100%;background:white;color:#1a3a4a;border:none;border-radius:14px;padding:14px;font-size:0.9rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;">Godkend</button>
+    <button onclick="visSkærm('forside')" style="background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:0.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;padding:8px;">Annuller</button>
+  </div>
+
+  <!-- BRUGT PENGE -->
+  <div class="skærm" id="brugt-penge" style="background:var(--bg);">
+    <div style="background:linear-gradient(135deg,var(--hav),var(--bølge));padding:50px 20px 24px;color:white;border-radius:0 0 28px 28px;flex-shrink:0;">
+      <button onclick="visSkærm('forside')" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:34px;height:34px;color:white;font-size:1rem;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;justify-content:center;">←</button>
+      <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;">Jeg har brugt penge</div>
+      <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">Hvad brugte du penge på?</div>
+    </div>
+    <div style="padding:20px 16px;overflow-y:auto;flex:1;">
+
+      <div class="kort">
+        <div class="kort-titel">Beløb</div>
+        <input id="beløb-input" type="number" inputmode="decimal" placeholder="0 kr." style="width:100%;padding:16px;border-radius:12px;border:1.5px solid var(--border);background:white;font-size:2rem;text-align:center;font-family:'DM Sans',sans-serif;color:var(--hav);outline:none;font-weight:500;">
+      </div>
+
+      <div class="kort">
+        <div class="kort-titel">Kategori</div>
+        <div id="kategori-valg" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="valg-knap" onclick="vælgKategori(this,'mad')"><div class="valg-ikon">🛒</div><div class="valg-tekst"><div class="valg-titel">Mad og drikkevarer</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'beklædning')"><div class="valg-ikon">👕</div><div class="valg-tekst"><div class="valg-titel">Beklædning</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'transport')"><div class="valg-ikon">🚌</div><div class="valg-tekst"><div class="valg-titel">Transport</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'tobak')"><div class="valg-ikon">🚬</div><div class="valg-tekst"><div class="valg-titel">Tobak</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'misbrug')"><div class="valg-ikon">💊</div><div class="valg-tekst"><div class="valg-titel">Misbrug</div><div class="valg-sub">Privat — deles ikke</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'andet')"><div class="valg-ikon">📦</div><div class="valg-tekst"><div class="valg-titel">Andet</div></div></div>
+          <div class="valg-knap" onclick="vælgKategori(this,'privat')"><div class="valg-ikon">🔒</div><div class="valg-tekst"><div class="valg-titel">Ønsker ikke at dele</div></div></div>
+        </div>
+      </div>
+
+      <button onclick="registrerUdgift()" class="knap knap-primær">Registrer</button>
+
+      <div id="økonomi-resultat" style="display:none;margin-top:16px;">
+        <div class="kort" id="resultat-kort"></div>
+        <div id="misbrug-motivation" style="display:none;margin-top:8px;"></div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- API NØGLE OPSÆTNING -->
   <div class="skærm" id="api-setup" style="background:linear-gradient(160deg,#1a3a4a,#2d6b7f);align-items:center;justify-content:center;padding:40px;gap:20px;display:flex;flex-direction:column;">
     <div style="font-size:2rem;">🔑</div>
@@ -789,6 +848,11 @@
       <div class="forside-dato" id="forside-dato"></div>
     </div>
     <div class="forside-indhold">
+
+      <button class="knap" onclick="visSkærm('brugt-penge')" style="background:white;color:var(--hav);border:1.5px solid var(--border);border-radius:14px;padding:14px 20px;font-size:0.9rem;display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:12px;box-shadow:var(--shadow-sm);">
+        <span style="font-size:1.2rem;">💸</span>
+        <span style="font-weight:500;">Jeg har brugt penge</span>
+      </button>
 
       <button class="ai-ven-knap" onclick="visSkærm('ai-samtale'); startAiSamtale()" id="ai-ven-knap">
         <div class="ai-ven-avatar">🌊</div>
@@ -1499,6 +1563,169 @@ function opdaterAiKnapper(svar) {
 // ============================================================
 // START
 // ============================================================
+// ============================================================
+// PIN SYSTEM
+// ============================================================
+let pinKaldbagefter = null;
+
+function gemPin() {
+  const pin = document.getElementById('pin-input').value;
+  const bekræft = document.getElementById('pin-bekræft').value;
+  if (pin.length !== 4 || isNaN(pin)) {
+    alert('PIN skal være præcis 4 cifre');
+    return;
+  }
+  if (pin !== bekræft) {
+    alert('PIN koderne er ikke ens — prøv igen');
+    return;
+  }
+  localStorage.setItem('mit_anker_pin', pin);
+  visSkærm('onboarding');
+  startOnboarding();
+}
+
+function kræverPin(kaldbagefter) {
+  const pin = localStorage.getItem('mit_anker_pin');
+  if (!pin) {
+    kaldbagefter();
+    return;
+  }
+  pinKaldbagefter = kaldbagefter;
+  document.getElementById('pin-godkend-input').value = '';
+  document.getElementById('pin-fejl').style.display = 'none';
+  visSkærm('pin-godkend');
+}
+
+function bekræftPin() {
+  const indtastet = document.getElementById('pin-godkend-input').value;
+  const gemt = localStorage.getItem('mit_anker_pin');
+  if (indtastet === gemt) {
+    visSkærm('forside');
+    if (pinKaldbagefter) {
+      pinKaldbagefter();
+      pinKaldbagefter = null;
+    }
+  } else {
+    document.getElementById('pin-fejl').style.display = 'block';
+    document.getElementById('pin-godkend-input').value = '';
+  }
+}
+
+// ============================================================
+// ØKONOMI — BRUGT PENGE
+// ============================================================
+let valgtKategori = '';
+let misbrugTotal = parseFloat(localStorage.getItem('mit_anker_misbrug_total') || '0');
+
+function vælgKategori(el, kategori) {
+  document.querySelectorAll('#kategori-valg .valg-knap').forEach(k => k.classList.remove('valgt'));
+  el.classList.add('valgt');
+  valgtKategori = kategori;
+}
+
+function registrerUdgift() {
+  const beløb = parseFloat(document.getElementById('beløb-input').value);
+  if (!beløb || beløb <= 0) {
+    alert('Indtast et beløb');
+    return;
+  }
+  if (!valgtKategori) {
+    alert('Vælg en kategori');
+    return;
+  }
+
+  // Hent økonomi data
+  const indkomst = parseFloat(localStorage.getItem('mit_anker_indkomst') || '12400');
+  const faste = parseFloat(localStorage.getItem('mit_anker_faste_udgifter') || '10850');
+  const tilRådighed = indkomst - faste;
+
+  // Beregn hvad der er brugt denne måned
+  const udgifter = JSON.parse(localStorage.getItem('mit_anker_udgifter') || '[]');
+  const nu = new Date();
+  const måned = nu.getMonth();
+  const år = nu.getFullYear();
+
+  const månedsUdgifter = udgifter.filter(u => {
+    const d = new Date(u.dato);
+    return d.getMonth() === måned && d.getFullYear() === år;
+  });
+
+  const brugtDenneMåned = månedsUdgifter.reduce((sum, u) => sum + u.beløb, 0);
+
+  // Gem udgift
+  udgifter.push({
+    beløb: beløb,
+    kategori: valgtKategori,
+    dato: nu.toISOString()
+  });
+  localStorage.setItem('mit_anker_udgifter', JSON.stringify(udgifter));
+
+  // Misbrug tracking
+  if (valgtKategori === 'misbrug') {
+    misbrugTotal += beløb;
+    localStorage.setItem('mit_anker_misbrug_total', misbrugTotal.toString());
+  }
+
+  // Beregn resten
+  const nyBrugt = brugtDenneMåned + beløb;
+  const tilbage_måned = Math.max(0, tilRådighed - nyBrugt);
+
+  const dagIdag = nu.getDate();
+  const dageIMåned = new Date(år, måned + 1, 0).getDate();
+  const dageIgjenIMåned = dageIMåned - dagIdag;
+  const dagensAndel = tilRådighed / dageIMåned;
+  const tilbage_dag = Math.max(0, dagensAndel - beløb);
+
+  const ugedage = 7;
+  const ugeAndel = tilRådighed / (dageIMåned / ugedage);
+  const tilbage_uge = Math.max(0, ugeAndel - nyBrugt % ugeAndel);
+
+  const kategorierDK = {
+    mad: 'mad og drikkevarer',
+    beklædning: 'beklædning',
+    transport: 'transport',
+    tobak: 'tobak',
+    misbrug: 'misbrug',
+    andet: 'andet',
+    privat: 'ikke angivet'
+  };
+
+  const kort = document.getElementById('resultat-kort');
+  kort.innerHTML = \`
+    <div style="font-size:0.85rem;color:var(--blød);margin-bottom:12px;">Du brugte <strong style="color:var(--hav);">\${beløb} kr.</strong> på \${kategorierDK[valgtKategori]}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE I DAG</div>
+        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_dag < 50 ? 'var(--rød)' : 'var(--grøn)'};">\${Math.round(tilbage_dag)} kr.</div>
+      </div>
+      <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE DENNE UGE</div>
+        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_uge < 200 ? 'var(--sol)' : 'var(--grøn)'};">\${Math.round(tilbage_uge)} kr.</div>
+      </div>
+      <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE DENNE MÅNED</div>
+        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_måned < 500 ? 'var(--sol)' : 'var(--grøn)'};">\${Math.round(tilbage_måned)} kr.</div>
+      </div>
+    </div>
+  \`;
+
+  document.getElementById('økonomi-resultat').style.display = 'block';
+
+  // Misbrug motivation
+  if (valgtKategori === 'misbrug') {
+    const drøm = localStorage.getItem('mit_anker_drøm') || 'din drøm';
+    const drømPris = parseFloat(localStorage.getItem('mit_anker_drøm_pris') || '0');
+    const motivDiv = document.getElementById('misbrug-motivation');
+    motivDiv.style.display = 'block';
+    motivDiv.innerHTML = \`
+      <div style="background:var(--sol-lys);border-left:3px solid var(--sol);border-radius:0 12px 12px 0;padding:14px 16px;">
+        <div style="font-size:0.78rem;font-weight:500;color:#7a4a00;margin-bottom:6px;">Du har brugt \${Math.round(misbrugTotal)} kr. på misbrug denne måned</div>
+        \${drømPris > 0 ? \`<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">For de samme penge er du \${Math.round((misbrugTotal/drømPris)*100)}% af vejen til \${drøm} 💛</div>\` : \`<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">Hvad kunne du have købt for \${Math.round(misbrugTotal)} kr.?</div>\`}
+      </div>
+    \`;
+  }
+}
+
 function tjekApiNøgle() {
   const gemt = localStorage.getItem('mit_anker_api_key');
   if (gemt && gemt.startsWith('sk-ant-')) {
