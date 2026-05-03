@@ -1187,6 +1187,13 @@ async function afslutOnboarding() {
 function visForside() {
   if (!borger) return;
 
+  // Tjek om PIN er sat - vis PIN setup hvis ikke
+  const pinSat = localStorage.getItem('mit_anker_pin');
+  if (!pinSat) {
+    visSkærm('pin-setup');
+    return;
+  }
+
   const nu = new Date();
   const time = nu.getHours();
   let hilsen = time < 10 ? 'God morgen,' : time < 14 ? 'God dag,' : time < 18 ? 'God eftermiddag,' : 'God aften,';
