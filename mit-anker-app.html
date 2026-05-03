@@ -1691,23 +1691,23 @@ function registrerUdgift() {
   };
 
   const kort = document.getElementById('resultat-kort');
-  kort.innerHTML = \`
-    <div style="font-size:0.85rem;color:var(--blød);margin-bottom:12px;">Du brugte <strong style="color:var(--hav);">\${beløb} kr.</strong> på \${kategorierDK[valgtKategori]}</div>
+  kort.innerHTML = `
+    <div style="font-size:0.85rem;color:var(--blød);margin-bottom:12px;">Du brugte <strong style="color:var(--hav);">${beløb} kr.</strong> på ${kategorierDK[valgtKategori]}</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
       <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
         <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE I DAG</div>
-        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_dag < 50 ? 'var(--rød)' : 'var(--grøn)'};">\${Math.round(tilbage_dag)} kr.</div>
+        <div style="font-size:1.1rem;font-weight:500;color:${tilbage_dag < 50 ? 'var(--rød)' : 'var(--grøn)'};">${Math.round(tilbage_dag)} kr.</div>
       </div>
       <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
         <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE DENNE UGE</div>
-        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_uge < 200 ? 'var(--sol)' : 'var(--grøn)'};">\${Math.round(tilbage_uge)} kr.</div>
+        <div style="font-size:1.1rem;font-weight:500;color:${tilbage_uge < 200 ? 'var(--sol)' : 'var(--grøn)'};">${Math.round(tilbage_uge)} kr.</div>
       </div>
       <div style="background:#f5f7f9;border-radius:12px;padding:12px;text-align:center;">
         <div style="font-size:10px;color:var(--blød);margin-bottom:4px;">TILBAGE DENNE MÅNED</div>
-        <div style="font-size:1.1rem;font-weight:500;color:\${tilbage_måned < 500 ? 'var(--sol)' : 'var(--grøn)'};">\${Math.round(tilbage_måned)} kr.</div>
+        <div style="font-size:1.1rem;font-weight:500;color:${tilbage_måned < 500 ? 'var(--sol)' : 'var(--grøn)'};">${Math.round(tilbage_måned)} kr.</div>
       </div>
     </div>
-  \`;
+  `;
 
   document.getElementById('økonomi-resultat').style.display = 'block';
 
@@ -1717,12 +1717,12 @@ function registrerUdgift() {
     const drømPris = parseFloat(localStorage.getItem('mit_anker_drøm_pris') || '0');
     const motivDiv = document.getElementById('misbrug-motivation');
     motivDiv.style.display = 'block';
-    motivDiv.innerHTML = \`
+    motivDiv.innerHTML = `
       <div style="background:var(--sol-lys);border-left:3px solid var(--sol);border-radius:0 12px 12px 0;padding:14px 16px;">
-        <div style="font-size:0.78rem;font-weight:500;color:#7a4a00;margin-bottom:6px;">Du har brugt \${Math.round(misbrugTotal)} kr. på misbrug denne måned</div>
-        \${drømPris > 0 ? \`<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">For de samme penge er du \${Math.round((misbrugTotal/drømPris)*100)}% af vejen til \${drøm} 💛</div>\` : \`<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">Hvad kunne du have købt for \${Math.round(misbrugTotal)} kr.?</div>\`}
+        <div style="font-size:0.78rem;font-weight:500;color:#7a4a00;margin-bottom:6px;">Du har brugt ${Math.round(misbrugTotal)} kr. på misbrug denne måned</div>
+        ${drømPris > 0 ? `<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">For de samme penge er du ${Math.round((misbrugTotal/drømPris)*100)}% af vejen til ${drøm} 💛</div>` : `<div style="font-size:0.75rem;color:#7a4a00;line-height:1.5;">Hvad kunne du have købt for ${Math.round(misbrugTotal)} kr.?</div>`}
       </div>
-    \`;
+    `;
   }
 }
 
