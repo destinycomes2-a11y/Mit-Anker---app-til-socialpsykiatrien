@@ -824,7 +824,127 @@
     </div>
   </div>
 
-  <!-- API NØGLE OPSÆTNING -->
+  <!-- ADMIN SIDE -->
+  <div class="skærm" id="admin" style="background:var(--bg);">
+    <div style="background:linear-gradient(135deg,var(--hav),var(--bølge));padding:50px 20px 24px;color:white;border-radius:0 0 28px 28px;flex-shrink:0;">
+      <button onclick="visSkærm('forside')" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:34px;height:34px;color:white;font-size:1rem;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;justify-content:center;">←</button>
+      <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;">⚙️ Indstillinger</div>
+      <div style="font-size:0.78rem;opacity:0.6;margin-top:4px;">Kun synlig for støttepersonen</div>
+    </div>
+    <div style="padding:20px 16px 80px;overflow-y:auto;flex:1;">
+
+      <!-- BORGER STAMDATA -->
+      <div class="kort">
+        <div class="kort-titel">Borgerdata</div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">Navn</div>
+          <input id="admin-navn" class="input-felt" placeholder="Borgerens navn..." style="font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">AI-ven hedder</div>
+          <input id="admin-ai-navn" class="input-felt" placeholder="Fx Ro, Lys, Havnen..." style="font-size:0.9rem;">
+        </div>
+        <button onclick="gemBorgerData()" class="knap knap-primær" style="font-size:0.85rem;">Gem borgerdata</button>
+      </div>
+
+      <!-- ØKONOMI -->
+      <div class="kort">
+        <div class="kort-titel">Økonomi opsætning</div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">Månedlig indkomst (kr.)</div>
+          <input id="admin-indkomst" type="number" class="input-felt" placeholder="12400" style="font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">Faste udgifter pr. måned (kr.)</div>
+          <input id="admin-faste" type="number" class="input-felt" placeholder="10850" style="font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">Borgerens drøm (hvad sparer de op til?)</div>
+          <input id="admin-drøm" class="input-felt" placeholder="Fx vinterjakke, cykel..." style="font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">Pris på drømmen (kr.)</div>
+          <input id="admin-drøm-pris" type="number" class="input-felt" placeholder="0" style="font-size:0.9rem;">
+        </div>
+        <div style="margin-bottom:4px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:6px;">Ludomani aktiv udfordring?</div>
+          <div style="display:flex;gap:8px;">
+            <button id="ludomani-ja" onclick="setLudomani(true)" class="knap knap-sekundær" style="font-size:0.8rem;flex:1;">Ja</button>
+            <button id="ludomani-nej" onclick="setLudomani(false)" class="knap knap-primær" style="font-size:0.8rem;flex:1;">Nej</button>
+          </div>
+        </div>
+        <button onclick="gemØkonomi()" class="knap knap-primær" style="font-size:0.85rem;margin-top:10px;">Gem økonomi</button>
+      </div>
+
+      <!-- UDFORDRINGER -->
+      <div class="kort">
+        <div class="kort-titel">Aktive udfordringer</div>
+        <div style="font-size:0.78rem;color:var(--blød);margin-bottom:10px;">Vælg de udfordringer der er relevante for borgeren</div>
+        <div id="udfordringer-liste" style="display:flex;flex-direction:column;gap:6px;"></div>
+        <button onclick="gemUdfordringer()" class="knap knap-primær" style="font-size:0.85rem;margin-top:10px;">Gem udfordringer</button>
+      </div>
+
+      <!-- KRISEPLAN -->
+      <div class="kort">
+        <div class="kort-titel">Personlige ankre til krisen</div>
+        <div style="font-size:0.78rem;color:var(--blød);margin-bottom:10px;">Skriv med borgerens egne ord hvad der hjælper dem</div>
+        <div id="kriseankre-liste"></div>
+        <button onclick="gemKriseankre()" class="knap knap-primær" style="font-size:0.85rem;margin-top:10px;">Gem kriseankre</button>
+      </div>
+
+      <!-- KONTAKTER -->
+      <div class="kort">
+        <div class="kort-titel">Støttepersoner og krisekontakter</div>
+        <div id="kontakter-liste" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+        <div style="background:#f5f7f9;border-radius:12px;padding:12px;margin-bottom:8px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:6px;">Tilføj kontakt</div>
+          <input id="kontakt-navn" class="input-felt" placeholder="Navn..." style="font-size:0.85rem;margin-bottom:6px;">
+          <input id="kontakt-rolle" class="input-felt" placeholder="Rolle (fx støtteperson, §85)..." style="font-size:0.85rem;margin-bottom:6px;">
+          <input id="kontakt-telefon" class="input-felt" placeholder="Telefonnummer..." style="font-size:0.85rem;margin-bottom:6px;">
+          <div style="display:flex;gap:6px;margin-bottom:6px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--hav);">
+              <input type="checkbox" id="kontakt-krise"> Krisekontakt
+            </label>
+          </div>
+          <button onclick="tilføjKontakt()" class="knap knap-grøn" style="font-size:0.82rem;">+ Tilføj</button>
+        </div>
+      </div>
+
+      <!-- UGESKEMA -->
+      <div class="kort">
+        <div class="kort-titel">Ugeskema — faste opgaver</div>
+        <div id="ugeskema-liste" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div style="background:#f5f7f9;border-radius:12px;padding:12px;">
+          <div style="font-size:0.75rem;color:var(--blød);margin-bottom:6px;">Tilføj opgave</div>
+          <input id="opgave-tekst" class="input-felt" placeholder="Opgave..." style="font-size:0.85rem;margin-bottom:6px;">
+          <select id="opgave-dag" class="input-felt" style="font-size:0.85rem;margin-bottom:6px;">
+            <option value="alle">Alle dage</option>
+            <option value="man">Mandag</option>
+            <option value="tir">Tirsdag</option>
+            <option value="ons">Onsdag</option>
+            <option value="tor">Torsdag</option>
+            <option value="fre">Fredag</option>
+            <option value="lør">Lørdag</option>
+            <option value="søn">Søndag</option>
+          </select>
+          <input id="opgave-tid" class="input-felt" placeholder="Tidspunkt (fx kl. 12)..." style="font-size:0.85rem;margin-bottom:6px;">
+          <button onclick="tilføjOpgave()" class="knap knap-grøn" style="font-size:0.82rem;">+ Tilføj</button>
+        </div>
+        <button onclick="gemUgeskema()" class="knap knap-primær" style="font-size:0.85rem;margin-top:10px;">Gem ugeskema</button>
+      </div>
+
+      <!-- PIN ÆNDRING -->
+      <div class="kort">
+        <div class="kort-titel">Skift PIN</div>
+        <input id="ny-pin" type="password" inputmode="numeric" maxlength="4" class="input-felt" placeholder="Ny PIN (4 cifre)..." style="font-size:1.2rem;text-align:center;letter-spacing:0.3em;margin-bottom:8px;">
+        <input id="ny-pin-bekræft" type="password" inputmode="numeric" maxlength="4" class="input-felt" placeholder="Bekræft ny PIN..." style="font-size:1.2rem;text-align:center;letter-spacing:0.3em;margin-bottom:8px;">
+        <button onclick="skiftPin()" class="knap knap-sekundær" style="font-size:0.85rem;">Skift PIN</button>
+      </div>
+
+    </div>
+  </div>
+
+    <!-- API NØGLE OPSÆTNING -->
   <div class="skærm" id="api-setup" style="background:linear-gradient(160deg,#1a3a4a,#2d6b7f);align-items:center;justify-content:center;padding:40px;gap:20px;display:flex;flex-direction:column;">
     <div style="font-size:2rem;">🔑</div>
     <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:300;color:white;text-align:center;">Opsætning</div>
@@ -896,6 +1016,7 @@
 
     </div>
     <button class="krise-fab" onclick="visSkærm('krise')" title="Kriseknap">🆘</button>
+    <button onclick="kræverPin(()=>{ indlæsAdmin(); visSkærm('admin'); })" style="position:fixed;bottom:24px;left:50%;transform:translateX(calc(-50% - 196px));background:white;border:1.5px solid var(--border);border-radius:50%;width:48px;height:48px;font-size:1.1rem;cursor:pointer;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;z-index:100;">⚙️</button>
   </div>
 
   <!-- KRISE TRIN 1 -->
@@ -1720,6 +1841,291 @@ function registrerUdgift() {
       </div>
     `;
   }
+}
+
+
+// ============================================================
+// ADMIN FUNKTIONER
+// ============================================================
+
+const alleUdfordringer = [
+  { id: 'tankemylder', label: 'Tankemylder' },
+  { id: 'angst', label: 'Angst og panik' },
+  { id: 'stemmer', label: 'Stemmer eller syn' },
+  { id: 'ensomhed', label: 'Ensomhed' },
+  { id: 'trang', label: 'Trang eller misbrug' },
+  { id: 'abstinenser', label: 'Abstinenser' },
+  { id: 'søvn', label: 'Søvnproblemer' },
+  { id: 'komme_ud', label: 'Svært ved at komme ud' },
+  { id: 'vrede', label: 'Vrede og frustration' },
+  { id: 'tristhed', label: 'Tristhed' },
+  { id: 'ludomani', label: 'Ludomani' },
+  { id: 'økonomi', label: 'Økonomi og gæld' }
+];
+
+function indlæsAdmin() {
+  // Borgerdata
+  if (borger) {
+    const navnEl = document.getElementById('admin-navn');
+    const aiNavnEl = document.getElementById('admin-ai-navn');
+    if (navnEl) navnEl.value = borger.navn || '';
+    if (aiNavnEl) aiNavnEl.value = borger.ai_ven_navn || '';
+  }
+
+  // Økonomi
+  const indkomstEl = document.getElementById('admin-indkomst');
+  const fasteEl = document.getElementById('admin-faste');
+  const drømEl = document.getElementById('admin-drøm');
+  const drømPrisEl = document.getElementById('admin-drøm-pris');
+  if (indkomstEl) indkomstEl.value = localStorage.getItem('mit_anker_indkomst') || '12400';
+  if (fasteEl) fasteEl.value = localStorage.getItem('mit_anker_faste_udgifter') || '10850';
+  if (drømEl) drømEl.value = localStorage.getItem('mit_anker_drøm') || '';
+  if (drømPrisEl) drømPrisEl.value = localStorage.getItem('mit_anker_drøm_pris') || '';
+
+  // Ludomani
+  const ludomani = localStorage.getItem('mit_anker_ludomani') === 'true';
+  const ludJa = document.getElementById('ludomani-ja');
+  const ludNej = document.getElementById('ludomani-nej');
+  if (ludJa && ludNej) {
+    if (ludomani) {
+      ludJa.className = 'knap knap-primær';
+      ludNej.className = 'knap knap-sekundær';
+    } else {
+      ludJa.className = 'knap knap-sekundær';
+      ludNej.className = 'knap knap-primær';
+    }
+  }
+
+  // Udfordringer
+  const aktivUdfordringer = JSON.parse(localStorage.getItem('mit_anker_udfordringer') || '[]');
+  const udfordringerListe = document.getElementById('udfordringer-liste');
+  if (udfordringerListe) {
+    udfordringerListe.innerHTML = alleUdfordringer.map(u => `
+      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${aktivUdfordringer.includes(u.id) ? 'var(--grøn-lys)' : '#f5f7f9'};border-radius:10px;cursor:pointer;font-size:0.85rem;color:var(--hav);">
+        <input type="checkbox" value="${u.id}" ${aktivUdfordringer.includes(u.id) ? 'checked' : ''} style="width:16px;height:16px;">
+        ${u.label}
+      </label>
+    `).join('');
+  }
+
+  // Kriseankre
+  const ankre = JSON.parse(localStorage.getItem('mit_anker_ankre') || '{}');
+  const kriseListe = document.getElementById('kriseankre-liste');
+  if (kriseListe) {
+    kriseListe.innerHTML = alleUdfordringer.map(u => `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:0.75rem;color:var(--blød);margin-bottom:4px;">${u.label}</div>
+        <textarea id="anker-${u.id}" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:white;font-size:0.82rem;font-family:'DM Sans',sans-serif;resize:none;color:var(--hav);" rows="2" placeholder="Hvad hjælper borgeren ved ${u.label.toLowerCase()}...">${ankre[u.id] || ''}</textarea>
+      </div>
+    `).join('');
+  }
+
+  // Kontakter
+  genindlæsKontakter();
+
+  // Ugeskema
+  genindlæsUgeskema();
+}
+
+function gemBorgerData() {
+  const navn = document.getElementById('admin-navn').value.trim();
+  const aiNavn = document.getElementById('admin-ai-navn').value.trim();
+
+  if (navn) {
+    borger.navn = navn.charAt(0).toUpperCase() + navn.slice(1);
+    borger.ai_ven_navn = aiNavn || 'Din ven';
+    localStorage.setItem('mit_anker_borger', JSON.stringify(borger));
+
+    const navnEl = document.getElementById('forside-navn');
+    const aiNavnEl = document.getElementById('ai-ven-display-navn');
+    const aiHeaderEl = document.getElementById('ai-header-navn');
+    if (navnEl) navnEl.textContent = borger.navn;
+    if (aiNavnEl) aiNavnEl.textContent = borger.ai_ven_navn;
+    if (aiHeaderEl) aiHeaderEl.textContent = borger.ai_ven_navn;
+  }
+
+  vis_besked('Borgerdata gemt ✓');
+}
+
+function gemØkonomi() {
+  const indkomst = document.getElementById('admin-indkomst').value;
+  const faste = document.getElementById('admin-faste').value;
+  const drøm = document.getElementById('admin-drøm').value;
+  const drømPris = document.getElementById('admin-drøm-pris').value;
+
+  localStorage.setItem('mit_anker_indkomst', indkomst || '12400');
+  localStorage.setItem('mit_anker_faste_udgifter', faste || '10850');
+  localStorage.setItem('mit_anker_drøm', drøm);
+  localStorage.setItem('mit_anker_drøm_pris', drømPris || '0');
+
+  vis_besked('Økonomi gemt ✓');
+}
+
+function setLudomani(aktiv) {
+  localStorage.setItem('mit_anker_ludomani', aktiv.toString());
+  const ludJa = document.getElementById('ludomani-ja');
+  const ludNej = document.getElementById('ludomani-nej');
+  if (aktiv) {
+    ludJa.className = 'knap knap-primær';
+    ludNej.className = 'knap knap-sekundær';
+  } else {
+    ludJa.className = 'knap knap-sekundær';
+    ludNej.className = 'knap knap-primær';
+  }
+}
+
+function gemUdfordringer() {
+  const checkboxes = document.querySelectorAll('#udfordringer-liste input[type="checkbox"]');
+  const valgte = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+  localStorage.setItem('mit_anker_udfordringer', JSON.stringify(valgte));
+  vis_besked('Udfordringer gemt ✓');
+}
+
+function gemKriseankre() {
+  const ankre = {};
+  alleUdfordringer.forEach(u => {
+    const el = document.getElementById('anker-' + u.id);
+    if (el && el.value.trim()) {
+      ankre[u.id] = el.value.trim();
+    }
+  });
+  localStorage.setItem('mit_anker_ankre', JSON.stringify(ankre));
+  vis_besked('Kriseankre gemt ✓');
+}
+
+function tilføjKontakt() {
+  const navn = document.getElementById('kontakt-navn').value.trim();
+  const rolle = document.getElementById('kontakt-rolle').value.trim();
+  const telefon = document.getElementById('kontakt-telefon').value.trim();
+  const krise = document.getElementById('kontakt-krise').checked;
+
+  if (!navn) { alert('Skriv et navn'); return; }
+
+  const kontakter = JSON.parse(localStorage.getItem('mit_anker_kontakter') || '[]');
+  kontakter.push({ navn, rolle, telefon, krise, prioritet: kontakter.length + 1 });
+  localStorage.setItem('mit_anker_kontakter', JSON.stringify(kontakter));
+
+  document.getElementById('kontakt-navn').value = '';
+  document.getElementById('kontakt-rolle').value = '';
+  document.getElementById('kontakt-telefon').value = '';
+  document.getElementById('kontakt-krise').checked = false;
+
+  genindlæsKontakter();
+  vis_besked('Kontakt tilføjet ✓');
+}
+
+function sletKontakt(index) {
+  const kontakter = JSON.parse(localStorage.getItem('mit_anker_kontakter') || '[]');
+  kontakter.splice(index, 1);
+  localStorage.setItem('mit_anker_kontakter', JSON.stringify(kontakter));
+  genindlæsKontakter();
+}
+
+function genindlæsKontakter() {
+  const kontakter = JSON.parse(localStorage.getItem('mit_anker_kontakter') || '[]');
+  const liste = document.getElementById('kontakter-liste');
+  if (!liste) return;
+  liste.innerHTML = kontakter.length === 0
+    ? '<div style="font-size:0.82rem;color:var(--blød);text-align:center;padding:10px;">Ingen kontakter endnu</div>'
+    : kontakter.map((k, i) => `
+      <div style="background:#f5f7f9;border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--grøn-lys);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:500;color:var(--grøn);flex-shrink:0;">${k.navn.charAt(0)}</div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;font-weight:500;color:var(--hav);">${k.navn}</div>
+          <div style="font-size:0.72rem;color:var(--blød);">${k.rolle || ''}${k.krise ? ' · Krisekontakt' : ''}</div>
+        </div>
+        <button onclick="sletKontakt(${i})" style="background:var(--rød-lys);border:none;border-radius:8px;padding:4px 8px;font-size:0.72rem;color:var(--rød);cursor:pointer;">Slet</button>
+      </div>
+    `).join('');
+}
+
+function tilføjOpgave() {
+  const tekst = document.getElementById('opgave-tekst').value.trim();
+  const dag = document.getElementById('opgave-dag').value;
+  const tid = document.getElementById('opgave-tid').value.trim();
+
+  if (!tekst) { alert('Skriv en opgave'); return; }
+
+  const opgaver = JSON.parse(localStorage.getItem('mit_anker_ugeskema') || '[]');
+  opgaver.push({ tekst, dag, tid });
+  localStorage.setItem('mit_anker_ugeskema', JSON.stringify(opgaver));
+
+  document.getElementById('opgave-tekst').value = '';
+  document.getElementById('opgave-tid').value = '';
+
+  genindlæsUgeskema();
+  vis_besked('Opgave tilføjet ✓');
+}
+
+function sletOpgave(index) {
+  const opgaver = JSON.parse(localStorage.getItem('mit_anker_ugeskema') || '[]');
+  opgaver.splice(index, 1);
+  localStorage.setItem('mit_anker_ugeskema', JSON.stringify(opgaver));
+  genindlæsUgeskema();
+}
+
+function genindlæsUgeskema() {
+  const opgaver = JSON.parse(localStorage.getItem('mit_anker_ugeskema') || '[]');
+  const liste = document.getElementById('ugeskema-liste');
+  if (!liste) return;
+  liste.innerHTML = opgaver.length === 0
+    ? '<div style="font-size:0.82rem;color:var(--blød);text-align:center;padding:10px;">Ingen opgaver endnu</div>'
+    : opgaver.map((o, i) => `
+      <div style="background:#f5f7f9;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;">
+          <div style="font-size:0.85rem;color:var(--hav);">${o.tekst}</div>
+          <div style="font-size:0.72rem;color:var(--blød);">${o.dag}${o.tid ? ' · ' + o.tid : ''}</div>
+        </div>
+        <button onclick="sletOpgave(${i})" style="background:var(--rød-lys);border:none;border-radius:8px;padding:4px 8px;font-size:0.72rem;color:var(--rød);cursor:pointer;">Slet</button>
+      </div>
+    `).join('');
+}
+
+function gemUgeskema() {
+  // Ugeskema gemmes løbende ved tilføjelse
+  vis_besked('Ugeskema gemt ✓');
+  // Opdater forsiden med nye opgaver
+  opdaterForsideOpgaver();
+}
+
+function opdaterForsideOpgaver() {
+  const opgaver = JSON.parse(localStorage.getItem('mit_anker_ugeskema') || '[]');
+  const dagensOpgaver = document.getElementById('dagens-opgaver');
+  if (!dagensOpgaver || opgaver.length === 0) return;
+
+  const nu = new Date();
+  const dage = ['søn','man','tir','ons','tor','fre','lør'];
+  const dagNavn = dage[nu.getDay()];
+
+  const idag = opgaver.filter(o => o.dag === 'alle' || o.dag === dagNavn);
+  if (idag.length === 0) return;
+
+  dagensOpgaver.innerHTML = idag.map(o => `
+    <div class="opgave-række">
+      <div class="check-boks" onclick="toggleOpgave(this)"></div>
+      <div class="opgave-tekst">${o.tekst}</div>
+      ${o.tid ? '<div class="opgave-tid">' + o.tid + '</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function skiftPin() {
+  const nyPin = document.getElementById('ny-pin').value;
+  const bekræft = document.getElementById('ny-pin-bekræft').value;
+  if (nyPin.length !== 4 || isNaN(nyPin)) { alert('PIN skal være 4 cifre'); return; }
+  if (nyPin !== bekræft) { alert('PIN koderne er ikke ens'); return; }
+  localStorage.setItem('mit_anker_pin', nyPin);
+  document.getElementById('ny-pin').value = '';
+  document.getElementById('ny-pin-bekræft').value = '';
+  vis_besked('PIN ændret ✓');
+}
+
+function vis_besked(tekst) {
+  const besked = document.createElement('div');
+  besked.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--grøn);color:white;padding:10px 20px;border-radius:20px;font-size:0.85rem;font-weight:500;z-index:1000;box-shadow:var(--shadow);';
+  besked.textContent = tekst;
+  document.body.appendChild(besked);
+  setTimeout(() => besked.remove(), 2500);
 }
 
 function tjekApiNøgle() {
