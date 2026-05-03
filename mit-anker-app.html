@@ -1218,27 +1218,16 @@ function visForside() {
 }
 
 async function indlæsBorger() {
-  const gemt_id = localStorage.getItem('mit_anker_borger_id');
-  if (!gemt_id) {
-    visSkærm('onboarding');
-    startOnboarding();
-    return;
+  const gemtBorger = localStorage.getItem('mit_anker_borger');
+  if (gemtBorger) {
+    try {
+      borger = JSON.parse(gemtBorger);
+      visForside();
+      return;
+    } catch {}
   }
-
-  try {
-    const { data, error } = await db
-      .from('borgere')
-      .select('*')
-      .eq('id', gemt_id)
-      .single();
-
-    if (error || !data) throw error;
-    borger = data;
-    visForside();
-  } catch {
-    visSkærm('onboarding');
-    startOnboarding();
-  }
+  visSkærm('onboarding');
+  startOnboarding();
 }
 
 // ============================================================
